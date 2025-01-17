@@ -1,5 +1,6 @@
 let movielist = document.getElementById("movielist");
 let movieinfo = document.getElementById("movieinfo");
+let genreList = [];
 
 function getMovieList() {
   fetch(
@@ -14,11 +15,45 @@ function getMovieList() {
   )
     .then((res) => res.json())
     .then((data) => {
+        allMovies = data.results;
       printMovieList(data.results);
     });
 }
 
+function getGenreList() {
+    fetch("https://api.themoviedb.org/3/genre/movie/list?language=en-US", {
+        method: "GET",
+        headers: {
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4OGQ2ZjkwNmIzODZhYzQ3YzAwNDcwMWQ4ZjU0NWRmOCIsIm5iZiI6MTcwNDM2MjAwNC4zODksInN1YiI6IjY1OTY4MDE0ZWEzN2UwMDZmYTRjYWQ4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fAIGy5BaC3YiG8Y8WMLb3GSnG9eSm4h4OKMbQHC-pu0"
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        genreList = data.genres;
+        printGenres(genreList);
+    });
+}
+
+function printGenres(genres) {
+    let genreList = document.getElementById("genrelist");
+    genreList.innerHTML = "";
+    genres.forEach(genre => {
+        let button = document.createElement("button");
+        button.innerText = genre.name;
+        button.addEventListener("click", () => filterMoviesByGenre(genre.id));
+        genreList.appendChild(button);
+    });
+}
+
+function filterMoviesByGenre(genreId) {
+    let filteredMovies = allMovies.filter(movie => movie.genre_ids.includes(genreId));
+    printMovieList(filteredMovies);
+
+}
+
+
 function printMovieList(movies) {
+    movielist.innerHTML = "";
   movies.map((movie) => {
     let li = document.createElement("li");
     li.innerText = movie.original_title;
@@ -36,6 +71,15 @@ function printMovieDetails(movie) {
   let p = document.createElement("p");
   p.innerText = movie.overview;
 
+  let genreNames = movie.genre_ids.map(genreId =>
+    {
+        let genre = genreList.find(g => g.id == genreId);
+        return genre ? genre.name : "Unknown genre";
+    }).join(", ");
+    
+    let genre = document.createElement("h4");
+    genre.innerText = "Genres: " + genreNames;
+
   let img = document.createElement("img");
   img.src = "http://image.tmdb.org/t/p/w500" + movie.poster_path;
 
@@ -45,6 +89,7 @@ function printMovieDetails(movie) {
 
   movieinfo.appendChild(h3);
   movieinfo.appendChild(p);
+  movieinfo.appendChild(genre);
   movieinfo.appendChild(img);
   movieinfo.appendChild(voteAverageCard);
 }
@@ -110,5 +155,5 @@ const createVoteAverageCard = (voteAverage) => {
   return card;
 };
 
-
+getGenreList();
 getMovieList();
