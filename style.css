@@ -1,0 +1,20 @@
+.vote-average-card {
+  width: 75px;
+  height: 75px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  background-color: #c8c8c8;
+}
+
+.vote-average-card__text {
+  font-size: 12px;
+}
+
+.vote-average-card__rating {
+  font-size: 20px;
+  font-weight: 600;
+}
