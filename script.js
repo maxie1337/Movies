@@ -143,9 +143,11 @@ function printMovieDetails(movie) {
     .join(", ");
 
   let genre = document.createElement("h4");
+  genre.classList.add("mb-3");
   genre.innerText = "Genres: " + genreNames;
 
   let img = document.createElement("img");
+  img.classList.add("mb-3");
   img.src = "http://image.tmdb.org/t/p/w500" + movie.poster_path;
 
   const voteAverageCard = createVoteAverageCard(movie.vote_average);
@@ -162,6 +164,8 @@ function printMovieDetails(movie) {
 function watchListButton(movie) {
   let button = document.createElement("button");
   button.innerText = "Add to watchlist";
+  button.classList.add("mb-3");
+  button.classList.add("rounded-2");
 
   let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
   if (watchlist.some((item) => item.id === movie.id)) {
@@ -239,6 +243,7 @@ function showWatchListDropDown(watchlist) {
 const createVoteAverageCard = (voteAverage) => {
   const card = document.createElement("div");
   card.classList.add("vote-average-card");
+  card.classList.add("mb-3");
   card.innerHTML = `
   <div class="vote-average-card__text">Rating</div>
   <div class="vote-average-card__rating">${voteAverage}</div>
@@ -281,54 +286,41 @@ document.addEventListener("DOMContentLoaded", () => {
   showWatchListDropDown(watchlist);
 });
 
-function createInputField()
-{
- let searchContainer = document.createElement("div");
- searchContainer.setAttribute("id", "search-container")
+function createInputField() {
+  let searchContainer = document.createElement("div");
+  searchContainer.setAttribute("id", "search-container");
 
+  let inputField = document.createElement("input");
+  inputField.setAttribute("id", "input-field");
+  inputField.setAttribute("placeholder", "Sök efter en film...");
 
- let inputField = document.createElement("input")
- inputField.setAttribute("id", "input-field")
- inputField.setAttribute("placeholder", "Sök efter en film...")
+  let searchButton = document.createElement("button");
+  searchButton.innerText = "Sök";
+  searchButton.addEventListener("click", searchMovie);
 
+  searchContainer.appendChild(inputField);
+  searchContainer.appendChild(searchButton);
 
- let searchButton = document.createElement("button")
- searchButton.innerText = "Sök";
- searchButton.addEventListener("click", searchMovie)
-
-
- searchContainer.appendChild(inputField);
- searchContainer.appendChild(searchButton);
-
-
- sidebar.append(searchContainer, movielist);
+  sidebar.append(searchContainer, movielist);
 }
 
+function searchMovie() {
+  let inputField = document.getElementById("input-field");
+  let safeInput = inputField.value.toLowerCase().trim();
+  if (!safeInput) {
+    alert("Ange filmnamn för att söka");
+    return;
+  }
+  let filteredMovies = allMovies.filter((movie) =>
+    movie.original_title.toLowerCase().includes(safeInput)
+  );
 
-function searchMovie()
-{
- let inputField = document.getElementById("input-field");
- let safeInput = inputField.value.toLowerCase().trim();
-  if(!safeInput)
- {
-   alert("Ange filmnamn för att söka")
-   return;
- }
-  let filteredMovies = allMovies.filter((movie) => 
-   movie.original_title.toLowerCase().includes(safeInput)
- );
-
-
- if(filteredMovies.length > 0)
- {
-   printMovieList(filteredMovies);
- }
- else
- {
-   movielist.innerHTML = "<p> Filmen fanns inte <p>";
- }
+  if (filteredMovies.length > 0) {
+    printMovieList(filteredMovies);
+  } else {
+    movielist.innerHTML = "<p> Filmen fanns inte <p>";
+  }
 }
-
 
 createInputField();
 getGenreList();
