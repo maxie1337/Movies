@@ -1,6 +1,7 @@
 let movielist = document.getElementById("movielist");
 let movieinfo = document.getElementById("movieinfo");
 let genreList = [];
+let allMovies = [];
 
 function getMovieList() {
   fetch(
@@ -290,9 +291,9 @@ function searchMovie()
    alert("Ange filmnamn för att söka")
    return;
  }
-  let filteredMovies = allMovies.filter((movie) => {
-   movie.original_title.toLowerCase().includes(safeInput);
- });
+  let filteredMovies = allMovies.filter((movie) => 
+   movie.original_title.toLowerCase().includes(safeInput)
+ );
 
 
  if(filteredMovies.length > 0)
