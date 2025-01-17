@@ -20,6 +20,23 @@ function getMovieList() {
     });
 }
 
+function getCastList(movie) {
+  
+  let movie_id = movie.id;
+
+  fetch(`https://api.themoviedb.org/3/movie/${movie_id}/credits`, {
+      method: "GET",
+      headers: {
+          Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4OGQ2ZjkwNmIzODZhYzQ3YzAwNDcwMWQ4ZjU0NWRmOCIsIm5iZiI6MTcwNDM2MjAwNC4zODksInN1YiI6IjY1OTY4MDE0ZWEzN2UwMDZmYTRjYWQ4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fAIGy5BaC3YiG8Y8WMLb3GSnG9eSm4h4OKMbQHC-pu0"
+      }
+  })
+  .then(res => res.json())
+  .then(dataCast => {
+      printCastList(dataCast.cast);
+  });
+}
+
+
 function getGenreList() {
   fetch("https://api.themoviedb.org/3/genre/movie/list?language=en-US", {
     method: "GET",
@@ -58,7 +75,10 @@ function printMovieList(movies) {
   movies.map((movie) => {
     let li = document.createElement("li");
     li.innerText = movie.original_title;
-    li.addEventListener("click", () => printMovieDetails(movie));
+    li.addEventListener("click", () => {
+      printMovieDetails(movie)
+      getCastList(movie)
+    });
     movielist.appendChild(li);
   });
 }
@@ -94,6 +114,8 @@ function printMovieDetails(movie) {
   movieinfo.appendChild(genre);
   movieinfo.appendChild(img);
   movieinfo.appendChild(voteAverageCard);
+
+
 }
 
 function watchListButton(movie) {
@@ -150,6 +172,21 @@ const createVoteAverageCard = (voteAverage) => {
 
   return card;
 };
+
+function printCastList(cast) {
+  let ul = document.createElement("ul");
+  ul.innerHTML = "<h4>Cast: </h4>";
+  console.log("type", typeof(cast));
+  
+  console.log("cast", cast);
+  cast.slice(0,10).forEach(actor => {
+    let li = document.createElement("li");
+    li.innerText = actor.name;
+    ul.appendChild(li);
+  })
+  
+  movieinfo.appendChild(ul);
+}
 
 getGenreList();
 getMovieList();
