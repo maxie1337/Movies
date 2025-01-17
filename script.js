@@ -1,5 +1,6 @@
 let movielist = document.getElementById("movielist");
 let movieinfo = document.getElementById("movieinfo");
+let sidebar = document.querySelector(".sidebar");
 let genreList = [];
 let allMovies = [];
 
@@ -232,7 +233,7 @@ function showWatchListDropDown(watchlist) {
 
   dropdownContainer.appendChild(dropdownButton);
   dropdownContainer.appendChild(dropdownMenu);
-  document.body.appendChild(dropdownContainer);
+  sidebar.appendChild(dropdownContainer);
 }
 
 const createVoteAverageCard = (voteAverage) => {
@@ -300,7 +301,7 @@ function createInputField()
  searchContainer.appendChild(searchButton);
 
 
- document.body.append(searchContainer, movielist);
+ sidebar.append(searchContainer, movielist);
 }
 
 
