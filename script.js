@@ -256,5 +256,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
   showWatchListDropDown(watchlist);
 });
+
+function createInputField()
+{
+ let searchContainer = document.createElement("div");
+ searchContainer.setAttribute("id", "search-container")
+
+
+ let inputField = document.createElement("input")
+ inputField.setAttribute("id", "input-field")
+ inputField.setAttribute("placeholder", "Sök efter en film...")
+
+
+ let searchButton = document.createElement("button")
+ searchButton.innerText = "Sök";
+ searchButton.addEventListener("click", searchMovie)
+
+
+ searchContainer.appendChild(inputField);
+ searchContainer.appendChild(searchButton);
+
+
+ document.body.append(searchContainer, movielist);
+}
+
+
+function searchMovie()
+{
+ let inputField = document.getElementById("input-field");
+ let safeInput = inputField.value.toLowerCase().trim();
+  if(!safeInput)
+ {
+   alert("Ange filmnamn för att söka")
+   return;
+ }
+  let filteredMovies = allMovies.filter((movie) => {
+   movie.original_title.toLowerCase().includes(safeInput);
+ });
+
+
+ if(filteredMovies.length > 0)
+ {
+   printMovieList(filteredMovies);
+ }
+ else
+ {
+   movielist.innerHTML = "<p> Filmen fanns inte <p>";
+ }
+}
+
+
+createInputField();
 getGenreList();
 getMovieList();
