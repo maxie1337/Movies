@@ -21,21 +21,20 @@ function getMovieList() {
 }
 
 function getCastList(movie) {
-  
   let movie_id = movie.id;
 
   fetch(`https://api.themoviedb.org/3/movie/${movie_id}/credits`, {
-      method: "GET",
-      headers: {
-          Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4OGQ2ZjkwNmIzODZhYzQ3YzAwNDcwMWQ4ZjU0NWRmOCIsIm5iZiI6MTcwNDM2MjAwNC4zODksInN1YiI6IjY1OTY4MDE0ZWEzN2UwMDZmYTRjYWQ4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fAIGy5BaC3YiG8Y8WMLb3GSnG9eSm4h4OKMbQHC-pu0"
-      }
+    method: "GET",
+    headers: {
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4OGQ2ZjkwNmIzODZhYzQ3YzAwNDcwMWQ4ZjU0NWRmOCIsIm5iZiI6MTcwNDM2MjAwNC4zODksInN1YiI6IjY1OTY4MDE0ZWEzN2UwMDZmYTRjYWQ4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fAIGy5BaC3YiG8Y8WMLb3GSnG9eSm4h4OKMbQHC-pu0",
+    },
   })
-  .then(res => res.json())
-  .then(dataCast => {
+    .then((res) => res.json())
+    .then((dataCast) => {
       printCastList(dataCast.cast);
-  });
+    });
 }
-
 
 function getGenreList() {
   fetch("https://api.themoviedb.org/3/genre/movie/list?language=en-US", {
@@ -57,28 +56,59 @@ function printGenres(genres) {
   genreList.innerHTML = "";
   genres.forEach((genre) => {
     let button = document.createElement("button");
+    button.classList.add("genre-button");
     button.innerText = genre.name;
-    button.addEventListener("click", () => filterMoviesByGenre(genre.id));
+    button.addEventListener("click", (e) => filterMoviesByGenre(e, genre.id));
     genreList.appendChild(button);
   });
   let allMoviesBtn = document.createElement("button");
-    allMoviesBtn.innerText = "Visa alla filmer";
-    allMoviesBtn.addEventListener("click", () => printMovieList(allMovies));
-    genreList.appendChild(allMoviesBtn);
+  allMoviesBtn.classList.add("genre-button");
+  allMoviesBtn.innerText = "Visa alla filmer";
+  allMoviesBtn.addEventListener("click", (e) => printAllMovies(e, allMovies));
+  genreList.appendChild(allMoviesBtn);
 }
 
-function filterMoviesByGenre(genreId) {
+function filterMoviesByGenre(e, genreId) {
+  const buttons = Array.from(document.querySelectorAll(".genre-button"));
+
+  buttons.map((button) => {
+    button.classList.remove("selected");
+  });
+
+  const targetButton = e.target;
+  targetButton.classList.add("selected");
+
   let filteredMovies = allMovies.filter((movie) =>
     movie.genre_ids.includes(genreId)
   );
 
-  if (filteredMovies.length === 0)
-    {
+  if (filteredMovies.length === 0) {
     movielist.innerHTML = "<p>Inga filmer hittades för denna genre.</p>";
   } else {
     printMovieList(filteredMovies);
   }
-    
+}
+
+function printAllMovies(e, movies) {
+  const buttons = Array.from(document.querySelectorAll(".genre-button"));
+
+  buttons.map((button) => {
+    button.classList.remove("selected");
+  });
+
+  const targetButton = e.target;
+  targetButton.classList.add("selected");
+
+  movielist.innerHTML = "";
+  movies.map((movie) => {
+    let li = document.createElement("li");
+    li.innerText = movie.original_title;
+    li.addEventListener("click", () => {
+      printMovieDetails(movie);
+      getCastList(movie);
+    });
+    movielist.appendChild(li);
+  });
 }
 
 function printMovieList(movies) {
@@ -87,12 +117,11 @@ function printMovieList(movies) {
     let li = document.createElement("li");
     li.innerText = movie.original_title;
     li.addEventListener("click", () => {
-      printMovieDetails(movie)
-      getCastList(movie)
+      printMovieDetails(movie);
+      getCastList(movie);
     });
     movielist.appendChild(li);
   });
-
 }
 
 function printMovieDetails(movie) {
@@ -126,22 +155,17 @@ function printMovieDetails(movie) {
   movieinfo.appendChild(genre);
   movieinfo.appendChild(img);
   movieinfo.appendChild(voteAverageCard);
-
-
 }
 
 function watchListButton(movie) {
-
   let button = document.createElement("button");
   button.innerText = "Add to watchlist";
 
   let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-  if (watchlist.some(item => item.id === movie.id))
-  {
-      button.innerText = "Remove from watchlist";
-  }else
-  {
-      button.innerText = "Add to watchlist";
+  if (watchlist.some((item) => item.id === movie.id)) {
+    button.innerText = "Remove from watchlist";
+  } else {
+    button.innerText = "Add to watchlist";
   }
 
   button.addEventListener("click", () => addMovieToLocalStorage(button, movie));
@@ -151,15 +175,13 @@ function watchListButton(movie) {
 
 function addMovieToLocalStorage(button, movie) {
   let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-  const alreadyListed = watchlist.findIndex(item => item.id === movie.id);
-  if (alreadyListed !== -1)
-  {
-      watchlist.splice(alreadyListed, 1);
-      button.innerText = "Add to watchlist";
-  }else
-  {
-      watchlist.push(movie);
-      button.innerText = "Remove from watchlist";
+  const alreadyListed = watchlist.findIndex((item) => item.id === movie.id);
+  if (alreadyListed !== -1) {
+    watchlist.splice(alreadyListed, 1);
+    button.innerText = "Add to watchlist";
+  } else {
+    watchlist.push(movie);
+    button.innerText = "Remove from watchlist";
   }
 
   localStorage.setItem("watchlist", JSON.stringify(watchlist));
@@ -240,15 +262,15 @@ const createVoteAverageCard = (voteAverage) => {
 function printCastList(cast) {
   let ul = document.createElement("ul");
   ul.innerHTML = "<h4>Cast: </h4>";
-  console.log("type", typeof(cast));
-  
+  console.log("type", typeof cast);
+
   console.log("cast", cast);
-  cast.slice(0,10).forEach(actor => {
+  cast.slice(0, 10).forEach((actor) => {
     let li = document.createElement("li");
     li.innerText = actor.name;
     ul.appendChild(li);
-  })
-  
+  });
+
   movieinfo.appendChild(ul);
 }
 
