@@ -61,6 +61,10 @@ function printGenres(genres) {
     button.addEventListener("click", () => filterMoviesByGenre(genre.id));
     genreList.appendChild(button);
   });
+  let allMoviesBtn = document.createElement("button");
+    allMoviesBtn.innerText = "Visa alla filmer";
+    allMoviesBtn.addEventListener("click", () => printMovieList(allMovies));
+    genreList.appendChild(allMoviesBtn);
 }
 
 function filterMoviesByGenre(genreId) {
