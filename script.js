@@ -131,14 +131,17 @@ function printMovieDetails(movie) {
 }
 
 function watchListButton(movie) {
+
   let button = document.createElement("button");
   button.innerText = "Add to watchlist";
 
   let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-  if (watchlist.some((item) => item.id === movie.id)) {
-    button.innerText = "Remove from watchlist";
-  } else {
-    button.innerText = "Add to watchlist";
+  if (watchlist.some(item => item.id === movie.id))
+  {
+      button.innerText = "Remove from watchlist";
+  }else
+  {
+      button.innerText = "Add to watchlist";
   }
 
   button.addEventListener("click", () => addMovieToLocalStorage(button, movie));
@@ -148,16 +151,65 @@ function watchListButton(movie) {
 
 function addMovieToLocalStorage(button, movie) {
   let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
-  const alreadyListed = watchlist.findIndex((item) => item.id === movie.id);
-  if (alreadyListed !== -1) {
-    watchlist.splice(alreadyListed, 1);
-    button.innerText = "Add to watchlist";
-  } else {
-    watchlist.push(movie);
-    button.innerText = "Remove from watchlist";
+  const alreadyListed = watchlist.findIndex(item => item.id === movie.id);
+  if (alreadyListed !== -1)
+  {
+      watchlist.splice(alreadyListed, 1);
+      button.innerText = "Add to watchlist";
+  }else
+  {
+      watchlist.push(movie);
+      button.innerText = "Remove from watchlist";
   }
 
   localStorage.setItem("watchlist", JSON.stringify(watchlist));
+
+  showWatchListDropDown(watchlist);
+}
+
+function showWatchListDropDown(watchlist) {
+  // Tar bort existerande dropdown om den finns
+  const existingDropdown = document.querySelector(".dropdown");
+  if (existingDropdown) {
+    existingDropdown.remove();
+  }
+  // Skapar en ny dropdown här med bootstrap
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.className = "dropdown watchlist-dropdown-container";
+
+  const dropdownButton = document.createElement("button");
+  dropdownButton.className = "btn btn-secondary dropdown-toggle";
+  dropdownButton.type = "button";
+  dropdownButton.setAttribute("data-bs-toggle", "dropdown");
+  dropdownButton.setAttribute("aria-expanded", "false");
+  dropdownButton.innerText = "Watchlist";
+
+  const dropdownMenu = document.createElement("ul");
+  dropdownMenu.className = "dropdown-menu";
+  dropdownMenu.id = "watchlist-dropdown";
+
+  dropdownMenu.innerHTML = "";
+  // Finns det inget i watchlist arrayen så skriver den ut att inga filmer finns
+  if (watchlist.length === 0) {
+    let noMoviesItem = document.createElement("li");
+    noMoviesItem.className = "dropdown-item text-muted";
+    noMoviesItem.innerText = "No Movies in watchlist";
+    dropdownMenu.appendChild(noMoviesItem);
+  } else {
+    // Annars skriver den ut titeln på filmen för varje film i arrayen
+    watchlist.forEach((movie) => {
+      const movieItem = document.createElement("li");
+      const movieLink = document.createElement("a");
+      movieLink.className = "dropdown-item";
+      movieLink.innerText = movie.original_title;
+      movieItem.appendChild(movieLink);
+      dropdownMenu.appendChild(movieItem);
+    });
+  }
+
+  dropdownContainer.appendChild(dropdownButton);
+  dropdownContainer.appendChild(dropdownMenu);
+  document.body.appendChild(dropdownContainer);
 }
 
 const createVoteAverageCard = (voteAverage) => {
@@ -200,5 +252,9 @@ function printCastList(cast) {
   movieinfo.appendChild(ul);
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  const watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+  showWatchListDropDown(watchlist);
+});
 getGenreList();
 getMovieList();
