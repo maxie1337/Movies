@@ -41,13 +41,48 @@ function printMovieDetails(movie) {
 
   const voteAverageCard = createVoteAverageCard(movie.vote_average);
 
+  watchListButton(movie);
+
   movieinfo.appendChild(h3);
   movieinfo.appendChild(p);
   movieinfo.appendChild(img);
   movieinfo.appendChild(voteAverageCard);
 }
 
-getMovieList();
+function watchListButton(movie) {
+
+    let button = document.createElement("button");
+    button.innerText = "Add to watchlist";
+
+    let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+    if (watchlist.some(item => item.id === movie.id))
+    {
+        button.innerText = "Remove from watchlist";
+    }else
+    {
+        button.innerText = "Add to watchlist";
+    }
+
+    button.addEventListener("click", () => addMovieToLocalStorage(button, movie));
+
+    movieinfo.appendChild(button);
+}
+
+function addMovieToLocalStorage(button, movie) {
+    let watchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
+    const alreadyListed = watchlist.findIndex(item => item.id === movie.id);
+    if (alreadyListed !== -1)
+    {
+        watchlist.splice(alreadyListed, 1);
+        button.innerText = "Add to watchlist";
+    }else
+    {
+        watchlist.push(movie);
+        button.innerText = "Remove from watchlist";
+    }
+
+    localStorage.setItem("watchlist", JSON.stringify(watchlist));
+}
 
 const createVoteAverageCard = (voteAverage) => {
   console.log(voteAverage);
@@ -74,3 +109,6 @@ const createVoteAverageCard = (voteAverage) => {
 
   return card;
 };
+
+
+getMovieList();
