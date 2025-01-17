@@ -71,7 +71,14 @@ function filterMoviesByGenre(genreId) {
   let filteredMovies = allMovies.filter((movie) =>
     movie.genre_ids.includes(genreId)
   );
-  printMovieList(filteredMovies);
+
+  if (filteredMovies.length === 0)
+    {
+    movielist.innerHTML = "<p>Inga filmer hittades för denna genre.</p>";
+  } else {
+    printMovieList(filteredMovies);
+  }
+    
 }
 
 function printMovieList(movies) {
@@ -85,6 +92,7 @@ function printMovieList(movies) {
     });
     movielist.appendChild(li);
   });
+
 }
 
 function printMovieDetails(movie) {
